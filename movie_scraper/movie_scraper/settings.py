@@ -14,13 +14,17 @@ NEWSPIDER_MODULE = "movie_scraper.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "movie_scraper (+http://www.yourdomain.com)"
+DOWNLOAD_DELAY = 0.5
+RANDOMIZE_DOWNLOAD_DELAY = True
+RANDOM_UA_PER_PROXY = True
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 16
+
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -50,9 +54,15 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "movie_scraper.middlewares.MovieScraperDownloaderMiddleware": 543,
-#}
+
+# ROTATING_PROXY_LIST_PATH = '/primary/60 projects/movie-scraper/http_proxies.txt'
+# DOWNLOADER_MIDDLEWARES = {
+#     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 630,
+#     'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+#     'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+# #    "movie_scraper.middlewares.MovieScraperDownloaderMiddleware": 543,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
