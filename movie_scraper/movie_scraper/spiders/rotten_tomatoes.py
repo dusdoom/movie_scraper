@@ -1,53 +1,72 @@
 from scrapy import Spider
+from movie_scraper.items import Movie, Review, Critic
+import scrapy
+import json
 
+MOVIES_FILE = "/primary/60 projects/movie-scraper/movies_test.txt"
+
+AMOUNT_OF_REVIEWERS = 556
+AMOUNT_OF_MOVIES_PER_REVIEWER = 10
+
+# currently this heavily depends on the API instead of the website itself
+# that means that if the API changes, this spider will break i more work should be done
+# it would be better to create some functions that scrape the website directly
 class RottenTomatoesSpider(Spider):
     name = "rotten_tomatoes"
     allowed_domains = ["www.rottentomatoes.com"]
-    start_urls = ["https://www.rottentomatoes.com"]
-
-    # i dont need to yield everything? i can just return the items
+    custom_settings = {
+        "DOWNLOAD_DELAY": "0.5",
+        "RANDOMIZE_DOWNLOAD_DELAY": "True",
+        "CONCURRENT_REQUESTS": "16",
+        "RANDOM_UA_PER_PROXY": True,
+    }
+    
     def start_requests(self):
-        # read movie names from a file
-        # build a link from the movie name
-        # yield requests
-        pass
+        movie_names = open(MOVIES_FILE, "r").readlines()
+        for line in movie_names:
+            if line[0] == "#":
+                continue
+            movie_name = "_".join(line.strip().split(" "))
+            movie_url = f"https://www.rottentomatoes.com/m/{movie_name}/reviews"
+
+            yield scrapy.Request(movie_url, callback=self.parse)
 
     def parse(self, response):
-        # start on movie page
-        # call _extract_movie_from_its_page
-        # visit critics page
-        # extract all links from all critics
-        ### extract 1000 links from all audience ???
-        # yield iterable of requests using both links with with follow_all and _parse_critic_page
-        print("Parsing Rotten Tomatoes")
+        # url to load reviews from critics
+        load_more_critics = response.selector.xpath("//load-more-manager/@endpoint").get()
+        yield scrapy.Request(f"https://www.rottentomatoes.com{load_more_critics}?pageCount={AMOUNT_OF_REVIEWERS}", callback=self._get_critic_pages)
 
-    def _parse_critic_page(self, response):
-        # iterate through all critics
-            # extract critic item using _extract_critic
-            # extract movie item using _extract_movie_from_critic_page
-            # extract review item using _extract_review
-            # add critic and movie to review
-            # yield review
-            ## review should NOT have its own table/collection
-            ## this should allow me to develop a pipeline where movie and critic would have their own reference to review while yielding just one item
-        print("Handling movies")
-    
-    def _extract_movie_from_critic_page(self, response):
-        # extract information from movie page
-        # return item
-        print("Parsing movie")
+    def _get_critic_pages(self, response):
+        response_json = json.loads(response.text)
 
-    def _extract_critic(self, response):
-        # extract information from critic page
-        # return item
-        print("Parsing critic")
+        for review in response_json["reviews"]:
+            yield scrapy.Request(f"https://www.rottentomatoes.com/{review['criticPageUrl']}", callback=self._get_critic_reviews)
 
-    def _extract_review(self, response):
-        # extract information from critic page
-        # return item
-        print("Parsing critic")
+    def _get_critic_reviews(self, response):
+        critic = Critic()
+        # it's -2 because the website adds /movies at the end of the url
+        name = response.url.split("/")[-2]
+        url = response.url
 
-    def _extract_movie_from_its_page(self, response):
-        # extract information from movie page
-        # return item
-        print("Parsing movie")
+        yield scrapy.Request(f"https://www.rottentomatoes.com/napi/critics/{name}/movies?pageCount={AMOUNT_OF_MOVIES_PER_REVIEWER}", callback=self._parse_reviews)
+
+
+    def _parse_reviews(self, response):
+        response_json = json.loads(response.text)
+
+        critic_name = response.url.split("/")[-2]
+        critic_url = f"https://www.rottentomatoes.com/{critic_name}"
+
+        for review in response_json["reviews"]:
+            review_item = Review()
+            review_item["criticUrl"] = critic_url
+            review_item["positiveSentiment"] = review["tomatometerState"] == "fresh" 
+            review_item["source"] = "www.rottentomatoes.com"
+            review_item["date"] = review["date"]
+            review_item["criticName"] = critic_name
+            review_item["fullReviewUrl"] = review["url"] if "url" in review else None
+            review_item["movieUrl"] = review["mediaUrl"]
+            review_item["rating"] = review["originalScore"] if "originalScore" in review else None
+            review_item["description"] = review["quote"]
+
+            yield review_item
