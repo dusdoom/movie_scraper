@@ -6,7 +6,6 @@ import json
 MOVIES_FILE = "/primary/60 projects/movie-scraper/movies_test.txt"
 
 AMOUNT_OF_REVIEWERS = 556
-AMOUNT_OF_MOVIES_PER_REVIEWER = 10
 
 # currently this heavily depends on the API instead of the website itself
 # that means that if the API changes, this spider will break i more work should be done
@@ -48,7 +47,7 @@ class RottenTomatoesSpider(Spider):
         name = response.url.split("/")[-2]
         url = response.url
 
-        yield scrapy.Request(f"https://www.rottentomatoes.com/napi/critics/{name}/movies?pageCount={AMOUNT_OF_MOVIES_PER_REVIEWER}", callback=self._parse_reviews)
+        yield scrapy.Request(f"https://www.rottentomatoes.com/napi/critics/{name}/movies", callback=self._parse_reviews)
 
 
     def _parse_reviews(self, response):

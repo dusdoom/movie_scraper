@@ -14,9 +14,9 @@ NEWSPIDER_MODULE = "movie_scraper.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-DOWNLOAD_DELAY = 0.5
-RANDOMIZE_DOWNLOAD_DELAY = True
-RANDOM_UA_PER_PROXY = True
+# DOWNLOAD_DELAY = 0.5
+# RANDOMIZE_DOWNLOAD_DELAY = True
+# RANDOM_UA_PER_PROXY = True
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -24,6 +24,7 @@ ROBOTSTXT_OBEY = True
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 CONCURRENT_REQUESTS = 16
+# LOG_LEVEL='INFO'
 
 
 # Configure a delay for requests for the same website (default: 0)
