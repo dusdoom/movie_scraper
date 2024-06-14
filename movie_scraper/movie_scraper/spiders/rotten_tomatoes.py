@@ -1,5 +1,7 @@
 from scrapy import Spider
-from movie_scraper.items import Movie, Review, User
+from movie_scraper.items.movie import Movie
+from movie_scraper.items.user import User
+from movie_scraper.items.review import Review
 import scrapy
 import json
 
@@ -84,5 +86,4 @@ class RottenTomatoesSpider(Spider):
             review_item["movieUrl"] = review["mediaUrl"]
             review_item["rating"] = review["originalScore"] if "originalScore" in review else None
             review_item["description"] = review["quote"]
-
             yield review_item
