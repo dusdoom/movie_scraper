@@ -16,10 +16,9 @@ class Movie(scrapy.Item):
     reviews = scrapy.Field()
 
 class Review(scrapy.Item):
-    criticUrl = scrapy.Field()
+    userUrl = scrapy.Field()
     positiveSentiment = scrapy.Field()
     movieUrl = scrapy.Field()
-    criticName = scrapy.Field()
     rating = scrapy.Field()
     fullReviewUrl = scrapy.Field()
     description = scrapy.Field()
@@ -27,8 +26,11 @@ class Review(scrapy.Item):
     # website where the review was found, this could be rotten tomatoes, imdb, metacritic, adoro cinema or letterboxd
     source = scrapy.Field()
 
-class Critic(scrapy.Item):
+class User(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
     # a list of Review Items, denormalization is fine here
     reviews = scrapy.Field()
+    source = scrapy.Field()
+    category = scrapy.Field()
+    
