@@ -1,6 +1,7 @@
 import scrapy
 
 class Review(scrapy.Item):
+    id = scrapy.Field()
     userUrl = scrapy.Field()
     positiveSentiment = scrapy.Field()
     movieUrl = scrapy.Field()

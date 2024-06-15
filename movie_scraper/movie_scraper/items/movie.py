@@ -4,6 +4,7 @@ import scrapy
 # This should happen because altough the movie link is unique for each website, it shouldnt be the field to identify a movie
 # because that would generate a lot of duplicated data
 class Movie(scrapy.Item):
+    id = scrapy.Field()
     name = scrapy.Field()
     # url will only be used to identify a movie while scraping, it shouldnt be used to identify a movie in the database
     url = scrapy.Field()
