@@ -2,10 +2,12 @@ from scrapy import Spider
 from movie_scraper.items.movie import Movie
 from movie_scraper.items.user import User
 from movie_scraper.items.review import Review
+from movie_scraper.pipelines.save_content import SaveContent
+from movie_scraper.pipelines.remove_duplicate import RemoveDuplicate
 import scrapy
 import json
 
-MOVIES_FILE = "/primary/60 projects/movie-scraper/movies_test.txt"
+MOVIES_FILE = "/primary/60 projects/movie-scraper/movies.txt"
 
 AMOUNT_OF_USERS = 50
 
@@ -16,7 +18,11 @@ class RottenTomatoesSpider(Spider):
     allowed_domains = ["www.rottentomatoes.com"]
     custom_settings = {
         "DOWNLOAD_DELAY": "0.5",
-        "RANDOMIZE_DOWNLOAD_DELAY": "True",
+        # "RANDOMIZE_DOWNLOAD_DELAY": "True",
+        "ITEM_PIPELINES": {
+            SaveContent: 300,
+            RemoveDuplicate: 100,
+        }
     }
     
     def start_requests(self):
@@ -44,46 +50,56 @@ class RottenTomatoesSpider(Spider):
             yield scrapy.Request(f"https://www.rottentomatoes.com/napi{review['criticPageUrl']}/movies", callback=self._parse_reviews)
 
         if("hasNextPage" in response_json):
+            if(amount > 3):
+                return
             parsed_url = f"https://www.rottentomatoes.com{response_json["api"]}?after={response_json["endCursor"]}&pageCount={AMOUNT_OF_REVIEWERS}"
             yield scrapy.Request(parsed_url, callback=self._get_users)
 
     # Builds and yield a Movie item.
-    def _parse_movie(self, name, url):
+    def _parse_movie(self, name, url, year):
         movie = Movie()
         movie["name"] = name
+        movie["id"] = url
+        movie["year"] = year
         movie["url"] = url
-        yield movie
+        return movie
 
 
     # Builds and yield a User item.
     def _parse_user(self, name, url):
         user = User()
         user["name"] = name
-        user["url"] = url
+        user["id"] = url
+        user["url"] = f'www.rottentomatoes.com{url}'
         user["source"] = "www.rottentomatoes.com"
         # this should be properly handled as soon as audience is implemented
         user["category"] = "critic" in url and "critic" or "audience"
-        yield user
+        return user
 
-    # Builds and yield a Review item.
+    # Builds and yield multiple Review items for each user.
     def _parse_reviews(self, response):
         response_json = json.loads(response.text)
 
         user_name = response_json["vanity"]
-        user_url = f"https://www.rottentomatoes.com/{user_name}"
+        user_url = f"https://www.rottentomatoes.com/critics/{user_name}"
 
-        self._parse_user(user_name, user_url)
+        yield self._parse_user(user_name, user_url)
 
         for review in response_json["reviews"]:
-            self._parse_movie(review["mediaTitle"], review["mediaUrl"])
+            if "mediaTitle" not in review or "mediaInfo" not in review:
+                continue
             
+            yield self._parse_movie(review["mediaTitle"], review["mediaUrl"], review["mediaInfo"])
+
             review_item = Review()
             review_item["userUrl"] = user_url
             review_item["positiveSentiment"] = review["tomatometerState"] == "fresh" 
             review_item["source"] = "www.rottentomatoes.com"
             review_item["date"] = review["date"]
             review_item["fullReviewUrl"] = review["url"] if "url" in review else None
-            review_item["movieUrl"] = review["mediaUrl"]
+            review_item["movieUrl"] = f'www.rottentomatoes.com{review["mediaUrl"]}'
             review_item["rating"] = review["originalScore"] if "originalScore" in review else None
             review_item["description"] = review["quote"]
+            review_item["id"] = user_name + review["mediaUrl"]
+
             yield review_item
