@@ -56,14 +56,12 @@ CONCURRENT_REQUESTS = 16
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 
-# ROTATING_PROXY_LIST_PATH = '/primary/60 projects/movie-scraper/http_proxies.txt'
-# DOWNLOADER_MIDDLEWARES = {
-#     'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 630,
-#     'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-#     'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-# #    "movie_scraper.middlewares.MovieScraperDownloaderMiddleware": 543,
-# }
+ROTATING_PROXY_LIST_PATH = '/primary/60 projects/movie-scraper/http_proxies.txt'
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 630,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+#    "movie_scraper.middlewares.MovieScraperDownloaderMiddleware": 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
