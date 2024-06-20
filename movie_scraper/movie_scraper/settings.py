@@ -20,10 +20,10 @@ NEWSPIDER_MODULE = "movie_scraper.spiders"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
+CONCURRENT_REQUESTS = 20
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
-CONCURRENT_REQUESTS = 16
 # LOG_LEVEL='INFO'
 
 

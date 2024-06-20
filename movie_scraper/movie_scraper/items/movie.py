@@ -5,6 +5,7 @@ import scrapy
 # because that would generate a lot of duplicated data
 class Movie(scrapy.Item):
     id = scrapy.Field()
+    year = scrapy.Field()
     name = scrapy.Field()
     # url will only be used to identify a movie while scraping, it shouldnt be used to identify a movie in the database
     url = scrapy.Field()

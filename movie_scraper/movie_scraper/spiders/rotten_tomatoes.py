@@ -7,9 +7,10 @@ from movie_scraper.pipelines.remove_duplicate import RemoveDuplicate
 import scrapy
 import json
 
-MOVIES_FILE = "/primary/60 projects/movie-scraper/movies.txt"
+MOVIES_FILE = "/primary/60 projects/movie-scraper/movies_test.txt"
 
 AMOUNT_OF_USERS = 50
+AMOUNT_OF_REVIEWERS = 30
 
 # currently this heavily depends on the API instead of the website itself
 # it would be better to create some functions that scrape the website directly
@@ -47,12 +48,18 @@ class RottenTomatoesSpider(Spider):
     def _get_users(self, response):
         response_json = json.loads(response.text)
         for review in response_json["reviews"]:
+            if "criticName" not in review or "criticPageUrl" not in review:
+                continue
+
+            url = review['criticPageUrl'] if "criticPageUrl" in review else None
+            name = review["criticName"] if "criticName" in review else None
+
+            yield self._parse_user(name, url)
             yield scrapy.Request(f"https://www.rottentomatoes.com/napi{review['criticPageUrl']}/movies", callback=self._parse_reviews)
 
-        if("hasNextPage" in response_json):
-            if(amount > 3):
-                return
-            parsed_url = f"https://www.rottentomatoes.com{response_json["api"]}?after={response_json["endCursor"]}&pageCount={AMOUNT_OF_REVIEWERS}"
+        if(response_json["pageInfo"]["hasNextPage"]):
+            end_cursor = response_json["pageInfo"]["endCursor"]
+            parsed_url = f"https://www.rottentomatoes.com{response_json["api"]}?after={end_cursor}&pageCount={AMOUNT_OF_REVIEWERS}"
             yield scrapy.Request(parsed_url, callback=self._get_users)
 
     # Builds and yield a Movie item.
@@ -82,8 +89,6 @@ class RottenTomatoesSpider(Spider):
 
         user_name = response_json["vanity"]
         user_url = f"https://www.rottentomatoes.com/critics/{user_name}"
-
-        yield self._parse_user(user_name, user_url)
 
         for review in response_json["reviews"]:
             if "mediaTitle" not in review or "mediaInfo" not in review:
