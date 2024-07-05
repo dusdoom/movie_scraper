@@ -1,13 +1,19 @@
 import scrapy
 
 class Review(scrapy.Item):
-    id = scrapy.Field()
-    userUrl = scrapy.Field()
+    # The sentiment of the review (positive, negative)
     positiveSentiment = scrapy.Field()
-    movieUrl = scrapy.Field()
+    # The URL of the user who wrote the review
+    userUrl = scrapy.Field()
+    # A unique identifier for the movie consisting in the format [year]name
+    movieId = scrapy.Field()
+    # Unparsed rating from the review (e.g. 8.5/10, 4/5, A+, C.)
     rating = scrapy.Field()
-    fullReviewUrl = scrapy.Field()
-    description = scrapy.Field()
-    date = scrapy.Field()
-    # website where the review was found, this could be rotten tomatoes, imdb, metacritic, adoro cinema or letterboxd
+    # The review text
+    text = scrapy.Field()
+    # The user name
+    userName = scrapy.Field()
+    # Checks if the review is highly relevant to the movie, e.g. a review from a top critic or has multiple likes
+    relevantRating = scrapy.Field()
+    # The source of the review (e.g. IMDB, Rotten Tomatoes, etc.)
     source = scrapy.Field()
