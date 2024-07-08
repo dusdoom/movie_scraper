@@ -1,8 +1,7 @@
 from scrapy import Spider
-from movie_scraper.items.movie import Movie
-from movie_scraper.items.review import Review
-from movie_scraper.pipelines.rotten_tomatoes_pipeline import RottenTomatoesPipeline
-from movie_scraper.pipelines.save_content import SaveContent
+from movie_scraper.items import Review
+from movie_scraper.pipelines import RottenTomatoesPipeline
+from movie_scraper.pipelines import SaveContent
 
 import scrapy
 import json
@@ -93,17 +92,14 @@ class RottenTomatoesSpider(Spider):
         for review in response_json["reviews"]:
             # some reviews dont include the title or the info of the movie, which makes them useless 
             if "mediaTitle" not in review or "mediaInfo" not in review:
-                # set default values to those fields
-                review["mediaTitle"] = "Unknown"
-                review["mediaInfo"] = "Unknown"
-            
-            yield self._build_movie(review["mediaTitle"], review["mediaUrl"], review["mediaInfo"])
+                continue
 
             review_item = Review()
             review_item["userUrl"] = user_url
+            review_item["movieName"] = review["mediaTitle"]
+            review_item["movieYear"] = review["mediaInfo"]
             review_item["positiveSentiment"] = review["tomatometerState"] == "fresh"
             review_item["source"] = "rottentomatoes"
-            review_item["movieId"] = f'[{review["mediaInfo"]}]{review["mediaTitle"]}'
             review_item["rating"] = review["originalScore"] if "originalScore" in review else None
             review_item["text"] = review["quote"]
             review_item["userName"] = user_name
@@ -118,10 +114,3 @@ class RottenTomatoesSpider(Spider):
                     callback=self.validate_user,
                     meta={"is_top_user": is_top_user}
                 )
-        
-    # both functions below should probably be changed to a builder pattern inside the items or something like that
-    def _build_movie(self, name, url, year):
-        movie = Movie()
-        movie["name"] = name
-        movie["year"] = year
-        return movie
