@@ -1,11 +1,12 @@
 from scrapy import Spider
 from movie_scraper.items import Review
 from movie_scraper.pipelines import RottenTomatoesPipeline, RatingNormalization, SaveContent
-
+from movie_scraper.settings import ROOT_DIR
 import scrapy
 import json
 
-MOVIES_FILE = "/primary/40 projects/movie_scraper/movies_test.txt"
+MOVIES_FILE = f"{ROOT_DIR}/assets/movies_test.txt"
+
 REVIEWERS_PER_PAGE = 20
 REVIEWS_PER_PAGE = 20
 MIN_REVIEW_COUNT = 20
@@ -95,7 +96,7 @@ class RottenTomatoesSpider(Spider):
             review_item["userUrl"] = user_url
             review_item["movieName"] = review["mediaTitle"]
             review_item["movieYear"] = review["mediaInfo"]
-            review_item["positiveSentiment"] = review["tomatometerState"] == "fresh"
+            review_item["sentiment"] = review["tomatometerSentiment"]
             review_item["source"] = "rottentomatoes"
             review_item["rating"] = review["originalScore"] if "originalScore" in review else None
             review_item["text"] = review["quote"]

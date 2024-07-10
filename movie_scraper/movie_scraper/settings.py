@@ -1,11 +1,7 @@
-# Scrapy settings for movie_scraper project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 BOT_NAME = "movie_scraper"
 

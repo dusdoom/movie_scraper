@@ -2,7 +2,7 @@ import scrapy
 
 class Review(scrapy.Item):
     # The sentiment of the review (positive, negative)
-    positiveSentiment = scrapy.Field()
+    sentiment = scrapy.Field()
     # The URL of the user who wrote the review
     userUrl = scrapy.Field()
     # A unique identifier for the movie consisting in the format [year]name

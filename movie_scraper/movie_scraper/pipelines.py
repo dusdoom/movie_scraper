@@ -4,6 +4,7 @@ from movie_scraper.items import Review
 from itemadapter import is_item, ItemAdapter
 from sys import getsizeof
 from pathlib import Path
+from movie_scraper.settings import ROOT_DIR
 import os
 import json
 
@@ -100,7 +101,6 @@ class RatingNormalization:
 
         return item
 
-
 class SaveContent:
     # solution from https://stackoverflow.com/questions/23793987/write-a-file-to-a-directory-that-doesnt-exist
     def mkdir_p(path):
@@ -112,9 +112,7 @@ class SaveContent:
             else: raise
 
     def open_spider(self, spider):
-        current_path = os.getcwd()
-
-        review_file_path = Path(current_path + '/output/reviews.json')
+        review_file_path = Path(f'{ROOT_DIR}/output/reviews.json')
 
         # create the directory if it doesn't exist
         review_file_path.parent.mkdir(parents=True, exist_ok=True)
