@@ -18,6 +18,6 @@ class Review(scrapy.Item):
     # The user name
     userName = scrapy.Field()
     # Checks if the review is highly relevant to the movie, e.g. a review from a top critic or has multiple likes
-    relevantRating = scrapy.Field()
+    isRelevantRating = scrapy.Field()
     # The source of the review (e.g. IMDB, Rotten Tomatoes, etc.)
     source = scrapy.Field()
