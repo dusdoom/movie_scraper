@@ -1,7 +1,6 @@
 from scrapy import Spider
 from movie_scraper.items import Review
-from movie_scraper.pipelines import RottenTomatoesPipeline
-from movie_scraper.pipelines import SaveContent
+from movie_scraper.pipelines import RottenTomatoesPipeline, RatingNormalization, SaveContent
 
 import scrapy
 import json
@@ -11,8 +10,6 @@ REVIEWERS_PER_PAGE = 20
 REVIEWS_PER_PAGE = 20
 MIN_REVIEW_COUNT = 20
 
-
-
 class RottenTomatoesSpider(Spider):
     name = "rotten_tomatoes"
     allowed_domains = ["www.rottentomatoes.com"]
@@ -21,7 +18,8 @@ class RottenTomatoesSpider(Spider):
         # "RANDOMIZE_DOWNLOAD_DELAY": "True",
         "ITEM_PIPELINES": {
             RottenTomatoesPipeline: 100,
-            SaveContent: 901,
+            RatingNormalization: 901,
+            SaveContent: 902,
         }
     }
 
@@ -78,10 +76,9 @@ class RottenTomatoesSpider(Spider):
         # if not in any of the above cases, ignores it
         else:
             print(f"User {response_json['vanity']} has less than {MIN_REVIEW_COUNT} reviews")
-            pass     
+            return None
 
         return self.parse_user_reviews(response_json, False)
-
 
     # this yields multiple items in a weird way
     # i should probably change this
@@ -103,7 +100,7 @@ class RottenTomatoesSpider(Spider):
             review_item["rating"] = review["originalScore"] if "originalScore" in review else None
             review_item["text"] = review["quote"]
             review_item["userName"] = user_name
-            review_item["relevantRating"] = is_top_user
+            review_item["isRelevantRating"] = is_top_user
             yield review_item
 
             # this calls a validation for a user that was already validated
