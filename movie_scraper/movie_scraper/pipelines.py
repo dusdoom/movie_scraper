@@ -70,13 +70,17 @@ class RatingNormalization:
         },
     }
 
-    def process_item(self, item, spider):
-        rating = item.get("rating")
-        if not rating:
+    def process_item(self, item, _spider):
+        original_rating = item.get("rating")
+        if not original_rating:
             return item
 
-        # split the rating into components and remove any leading/trailing whitespaces
-        rating_components = [x.strip() for x in rating.split("/")]
+        new_rating = {
+            "original_rating": original_rating,
+        }
+
+        # split the rating into a list and remove any leading/trailing whitespaces
+        rating_components = [x.strip() for x in original_rating.split("/")]
 
         # means the rating is in the format of "rating/max_rating", e.g. "8.5/10", "4/5", "85/100"
         if len(rating_components) == 2:
@@ -85,20 +89,21 @@ class RatingNormalization:
 
             # if the max rating is 100, then the rating is already normalized
             if max_rating == "100":
-                item["rating"] = rating_value
+                new_rating["normalized_rating"] = rating_value
             else:
                 try:
-                    item["rating"] = self.numeric_scale[max_rating][int(rating_value)]
+                    new_rating["normalized_rating"] = self.numeric_scale[max_rating][int(rating_value)]
                 except KeyError:
-                    print(f"Rating {rating_components} out of scale patterns.")
+                    raise DropItem(f"Rating {original_rating} out of scale patterns.")
         # means the rating is in the format of "A+", "B", "C-", etc
         else:
             rating_value = rating_components[0]
             try:
-                item["rating"] = self.alphanumeric_scale[rating_value]
+                new_rating["normalized_rating"] = self.alphanumeric_scale[rating_value]
             except KeyError:
-                raise DropItem(f"Rating {rating_value} out of scale patterns.")
+                raise DropItem(f"Rating {original_rating} out of scale patterns.")
 
+        item["rating"] = new_rating
         return item
 
 class SaveContent:
