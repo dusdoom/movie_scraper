@@ -21,7 +21,7 @@ This is supposed to represent the data scrapped, focusing solely on the the revi
 | userUrl           | The URL of the user who wrote the review                                                       |
 | movieName         | The name of the movie                                                                          |
 | movieYear         | Release year of the movie                                                                      |
-| rating            | Unparsed rating from the review (e.g. 8.5/10, 4/5, A+, C.)                                     |
+| rating            | Original and normalized rating from the review (e.g. 8.5/10, 4/5, A+, C.).                     |
 | text              | The review text                                                                                |
 | userName          | The user name                                                                                  |
 | isRelevantRating  | Checks if the review is highly relevant to the movie, e.g. a review from a top critic or has multiple likes |
