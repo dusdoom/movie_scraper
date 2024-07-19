@@ -4,9 +4,10 @@ A very rough code for a webscraper made with the intent of building a dataset of
   
 ## Documentation
 This documentation should contain resources generic enough to implement the same spider on most review websites using any library, framework, language or tool. For my case, i choose to use the Scrapy framework.
+![overview](https://raw.githubusercontent.com/dusdoom/movie_scraper/main/docs/overview.svg)
+
 ### Scraping flow
 The **flowchart** bellow is supposed to represent the process for each movie and should be compatible with most website review structure. This does not mean that a spider should be responsible for every website (which should be pretty complex to do) but declares a step-by-step to be performed on each one.
-
 ![scraping flowchart](https://raw.githubusercontent.com/dusdoom/movie_scraper/main/docs/scraping_flow.svg?token=GHSAT0AAAAAACU5GR2GIECE3I4OP7Y6YIJ2ZUWJNKQ)
 
 >  "**Top user**" should be a definition of how prestigious is the user as a movie reviewer. Each source should have it's own algorithm to determine this. While this could mean being a Top Critic in Rotten Tomatoes, it could be a user with more than 200 reviews in AdoroCinema.
@@ -27,3 +28,7 @@ This is supposed to represent the data scrapped, focusing solely on the the revi
 | isRelevantRating  | Checks if the review is highly relevant to the movie, e.g. a review from a top critic or has multiple likes |
 | source            | The source of the review (e.g. IMDB, Rotten Tomatoes, etc.)                                    |
 
+#### Cleaning pipeline
+**Rotten tomatoes**
+
+![overview](https://raw.githubusercontent.com/dusdoom/movie_scraper/main/docs/cleaning%20pipeline.svg)
