@@ -1,6 +1,7 @@
 # Movie review scraper
+not sure if this could be useful for someone so i will just throw it here
 ## About
-A very rough code for a webscraper made with the intent of building a dataset of movie reviews from multiple sources to be used in multiple smaller projects, mainly a **movie recommendation system**. Each spider should be given a list of url or implement it's own URL builder function that will scrape data based on a predefined flow, parsing all the reviews to the same format.
+A very rough code for a webscraper made with the intent of building a dataset of movie reviews from multiple sources to be used some projects, mainly a **movie recommendation system**. Each spider should be given a list of url or implement it's own URL builder function that will scrape data based on a predefined flow, parsing all the reviews to the same format.
   
 ## Documentation
 This documentation should contain resources generic enough to implement the same spider on most review websites using any library, framework, language or tool. For my case, i choose to use the Scrapy framework.
