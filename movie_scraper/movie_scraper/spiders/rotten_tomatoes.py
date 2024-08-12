@@ -5,7 +5,7 @@ from movie_scraper.settings import ROOT_DIR
 import scrapy
 import json
 
-MOVIES_FILE = f"{ROOT_DIR}/assets/movies_test.txt"
+MOVIES_FILE = f"{ROOT_DIR}/assets/movies.txt"
 
 REVIEWERS_PER_PAGE = 20
 REVIEWS_PER_PAGE = 20
@@ -54,7 +54,8 @@ class RottenTomatoesSpider(Spider):
 
             # skips scraped users
             if review["criticPageUrl"] not in self.scraped_users:
-                user_page_url = f"https://www.rottentomatoes.com{review['criticPageUrl']}/movies"
+                print(f'AQUIIIIIIIIIIIIIIIIIIIIIII {response.url}')
+                user_page_url = f"https://www.rottentomatoes.com/napi{review['criticPageUrl']}/movies"
                 yield scrapy.Request(
                     url=user_page_url,
                     callback=self.validate_user,

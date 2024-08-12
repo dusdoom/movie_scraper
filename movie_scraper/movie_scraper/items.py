@@ -5,8 +5,6 @@ class Review(scrapy.Item):
     sentiment = scrapy.Field()
     # The URL of the user who wrote the review
     userUrl = scrapy.Field()
-    # A unique identifier for the movie consisting in the format [year]name
-    movieId = scrapy.Field()
     # The name of the movie
     movieName = scrapy.Field()
     # Release year of the movie
